@@ -98,6 +98,19 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
       $turnaroundTime -= $deductionTime;
     }
 
+    $done = FALSE;
+    while ($done !== TRUE) {
+      // Handles weekend.
+      if ($this->isWeekend($resolveDate)) {
+        $addition = new \DateInterval('PT24H');
+        $resolveDate->add($addition);
+
+        continue;
+      }
+
+      $done = TRUE;
+    }
+
     return $resolveDate;
   }
 
