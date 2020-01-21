@@ -15,12 +15,12 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
   /**
    * Calculates due date.
    *
-   * @param \DateTime $submitDate
+   * @param \DateTimeInterface $submitDate
    *   Date/time of the submission.
    * @param int $turnaroundTime
    *   Turnaround time in hours (e.g. 2 days equal 16 hours).
    *
-   * @return \DateTime
+   * @return \DateTimeInterface
    *   Returns the date/time when the issue is resolved.
    *
    * @throws \Classes\Exception\TurnaroundTimeException
@@ -40,34 +40,36 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
     // Makes our job/life easier and get rid of float numbers.
     $resolveDate->setTime($submitDate->format('H'), 0);
 
+    $this->calculate($submitDate, $resolveDate, $turnaroundTime);
+
+    return $resolveDate;
+  }
+
+  /**
+   * Calculates due date.
+   *
+   * @param \DateTimeInterface $submitDate
+   *   Date/time of the submission.
+   * @param \DateTimeInterface $resolveDate
+   *   Date/time object of when the issue will be resolved.
+   * @param int $turnaroundTime
+   *   Turnaround time in hours (e.g. 2 days equal 16 hours).
+   *
+   * @throws \Exception
+   */
+  protected function calculate(\DateTimeInterface $submitDate, \DateTimeInterface $resolveDate, int $turnaroundTime) {
     $backupMinutes = new \DateInterval('PT' . $submitDate->format('i') . 'M');
     $workingHours = $this->getWorkingHours();
-    $hadWeekend = FALSE;
+
     while ($turnaroundTime > 0) {
-      $tempDate = clone $resolveDate;
+      // Pristine date of the actual cycle.
+      $pristineDate = clone $resolveDate;
 
-      // Handles weekend.
-      if ($this->isWeekend($resolveDate)) {
-        $addition = new \DateInterval('PT24H');
-        $resolveDate->add($addition);
-
-        $hadWeekend = TRUE;
-
+      if ($hadWeekend = $this->handleWeekend($resolveDate)) {
         continue;
       }
 
-      // After weekend(s), starts Monday from the time of working hours.
-      if (
-        $hadWeekend
-        && $resolveDate->format('N') == 1
-      ) {
-        $resolveDate->setTime(
-          $this->workingHoursFrom->format('H'),
-          $this->workingHoursFrom->format('i')
-        );
-
-        $hadWeekend = FALSE;
-
+      if ($hadWeekend && $this->handleMondayAfterWeekend($resolveDate)) {
         continue;
       }
 
@@ -79,47 +81,100 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
 
       $hours = (int) $deductionTime;
       $minutes = ($deductionTime - $hours) * 60;
-
       $addition = new \DateInterval('PT' . $hours . 'H' . $minutes . 'M');
       $resolveDate->add($addition);
 
-      if (!$this->isWorkingHours($resolveDate)) {
-        $difference = $this->getDatesDifference($tempDate, $resolveDate);
-
-        // Deducts from resolve date by the difference of overflow.
-        $deductionHours = (int) $difference;
-        $deductionMinutes = (int) ($difference - $deductionHours) * 60;
-        $deduction = new \DateInterval('PT' . $deductionHours . 'H' . $deductionMinutes . 'M');
-        $resolveDate->sub($deduction);
-
-        $deductionTime -= $deductionHours;
-        $deductionTime -= ($deductionMinutes / 100);
-
-        // Addition to next working day.
-        $toNextDay = 24 - $this->getWorkingHours();
-        $toNextDayHours = (int) $toNextDay;
-        $toNextDayMinutes = (int) ($toNextDay - $toNextDayHours) * 60;
-        $addition = new \DateInterval('PT' . $toNextDayHours . 'H' . $toNextDayMinutes . 'M');
-        $resolveDate->add($addition);
-      }
+      $deductionTime = $this->handleTimeOverflow($resolveDate, $pristineDate, $deductionTime);
 
       $turnaroundTime -= $deductionTime;
     }
 
-    $done = FALSE;
-    while ($done !== TRUE) {
-      // Handles weekend.
-      if ($this->isWeekend($resolveDate)) {
-        $addition = new \DateInterval('PT24H');
-        $resolveDate->add($addition);
+    $this->handleRemainingDays($resolveDate);
+  }
 
-        continue;
-      }
+  /**
+   * Handles weekend.
+   *
+   * @param \DateTimeInterface $resolveDate
+   *   Date/time object of when the issue will be resolved.
+   *
+   * @return bool
+   *   Weekend handled or not.
+   *
+   * @throws \Exception
+   */
+  protected function handleWeekend(\DateTimeInterface $resolveDate): bool {
+    if ($this->isWeekend($resolveDate)) {
+      $addition = new \DateInterval('PT24H');
+      $resolveDate->add($addition);
 
-      $done = TRUE;
+      return TRUE;
     }
 
-    return $resolveDate;
+    return FALSE;
+  }
+
+  /**
+   * Handles hour and minute of resolve date if it's Monday after weekend.
+   *
+   * @param \DateTimeInterface $resolveDate
+   *   Date/time object of when the issue will be resolved.
+   *
+   * @return bool
+   *   Monday handled or not.
+   */
+  protected function handleMondayAfterWeekend(\DateTimeInterface $resolveDate): bool {
+    if ($resolveDate->format('N') == 1) {
+      $resolveDate->setTime(
+        $this->workingHoursFrom->format('H'),
+        $this->workingHoursFrom->format('i')
+      );
+
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Handles time overflow.
+   *
+   * @param \DateTimeInterface $resolveDate
+   *   Date/time object of when the issue will be resolved.
+   * @param \DateTimeInterface $pristineDate
+   *   Pristine date of the actual cycle.
+   * @param float $deductionTime
+   *   Deduction time.
+   *
+   * @return float
+   *   Modified deduction time if time overflown.
+   *
+   * @throws \Exception
+   */
+  protected function handleTimeOverflow(\DateTimeInterface $resolveDate, \DateTimeInterface $pristineDate, float $deductionTime): float {
+    if ($this->isWorkingHours($resolveDate)) {
+      return $deductionTime;
+    }
+
+    $difference = $this->getDatesDifference($pristineDate, $resolveDate);
+
+    // Deducts from resolve date by the difference of overflow.
+    $deductionHours = (int) $difference;
+    $deductionMinutes = (int) ($difference - $deductionHours) * 60;
+    $deduction = new \DateInterval('PT' . $deductionHours . 'H' . $deductionMinutes . 'M');
+    $resolveDate->sub($deduction);
+
+    $deductionTime -= $deductionHours;
+    $deductionTime -= ($deductionMinutes / 100);
+
+    // Addition to next working day.
+    $toNextDay = 24 - $this->getWorkingHours();
+    $toNextDayHours = (int) $toNextDay;
+    $toNextDayMinutes = (int) ($toNextDay - $toNextDayHours) * 60;
+    $addition = new \DateInterval('PT' . $toNextDayHours . 'H' . $toNextDayMinutes . 'M');
+    $resolveDate->add($addition);
+
+    return $deductionTime;
   }
 
   /**
@@ -141,6 +196,25 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
     );
 
     return (float) abs($toDate->getTimestamp() - $contextDate->getTimestamp()) / (60 * 60);
+  }
+
+  /**
+   * Handles remaining days.
+   *
+   * @param \DateTimeInterface $resolveDate
+   *   Date/time object of when the issue will be resolved.
+   *
+   * @throws \Exception
+   */
+  protected function handleRemainingDays(\DateTimeInterface $resolveDate) {
+    $done = FALSE;
+    while ($done !== TRUE) {
+      if ($this->handleWeekend($resolveDate)) {
+        continue;
+      }
+
+      $done = TRUE;
+    }
   }
 
 }
