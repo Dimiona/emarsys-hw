@@ -54,4 +54,12 @@ class DueDateCalculatorTest extends TestCase {
     $this->assertEquals('2020-02-03 09:12:00', $resolveDate->format('Y-m-d H:i:s'));
   }
 
+  public function testLeapYear() {
+    $submitDate = new \DateTime('2012-02-28 09:00:00');
+    $turnaroundTime = 16;
+    $resolveDate = $this->calculator->CalculateDueDate($submitDate, $turnaroundTime);
+
+    $this->assertEquals('2012-03-01 09:00:00', $resolveDate->format('Y-m-d H:i:s'));
+  }
+
 }
