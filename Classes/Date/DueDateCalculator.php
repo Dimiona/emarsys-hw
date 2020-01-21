@@ -40,10 +40,7 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
 
     $resolveDate = clone $submitDate;
     // Makes our job/life easier and get rid of float numbers.
-    $resolveDate->setTime(
-      $submitDate->format('H'),
-      0
-    );
+    $resolveDate->setTime($submitDate->format('H'), 0);
 
     $workingHours = $this->getWorkingHours();
     $hadWeekend = FALSE;
