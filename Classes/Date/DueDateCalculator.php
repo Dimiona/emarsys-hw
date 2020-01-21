@@ -13,7 +13,19 @@ use Classes\Exception\WorkingHoursException;
 class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculatorInterface {
 
   /**
-   * {@inheritdoc}
+   * Calculates due date.
+   *
+   * @param \DateTime $submitDate
+   *   Date/time of the submission.
+   * @param int $turnaroundTime
+   *   Turnaround time in hours (e.g. 2 days equal 16 hours).
+   *
+   * @return \DateTime
+   *   Returns the date/time when the issue is resolved.
+   *
+   * @throws \Classes\Exception\TurnaroundTimeException
+   * @throws \Classes\Exception\WorkingHoursException
+   * @throws \Exception
    */
   public function CalculateDueDate(\DateTime $submitDate, int $turnaroundTime): \DateTime {
     if (!$this->isWorkingHours($submitDate)) {
