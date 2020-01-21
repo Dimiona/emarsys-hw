@@ -11,7 +11,7 @@ interface DueDateCalculatorInterface {
 
   const WORKING_HOURS_FROM = '09:00:00';
 
-  const WORKING_HOURS_TO = '16:00:00';
+  const WORKING_HOURS_TO = '17:00:00';
 
   /**
    * Calculates due date.
