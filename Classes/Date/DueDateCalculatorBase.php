@@ -27,7 +27,9 @@ abstract class DueDateCalculatorBase implements DueDateCalculatorInterface {
    * DueDateCalculatorBase constructor.
    *
    * @param \DateTime|NULL $workingHoursFrom
+   *   Working hours from.
    * @param \DateTime|NULL $workingHoursTo
+   *   Working hours to. Value lesser than 'from' date/time will be ignored.
    *
    * @throws \Exception
    */
@@ -40,6 +42,12 @@ abstract class DueDateCalculatorBase implements DueDateCalculatorInterface {
     }
 
     if (!is_null($workingHoursTo)) {
+      // Working hours 'to' lesser than 'from' date/time will be ignored.
+      // @todo - Should be throw exception instead?
+      if ($workingHoursTo < $this->workingHoursFrom) {
+        $workingHoursTo = new \DateTime(self::WORKING_HOURS_TO);
+      }
+
       $this->workingHoursTo = $workingHoursTo;
     }
     else {
@@ -55,16 +63,24 @@ abstract class DueDateCalculatorBase implements DueDateCalculatorInterface {
   /**
    * {@inheritdoc}
    */
-  public function isWorkingHours(\DateTime $date): bool {
+  final public function isWorkingHours(\DateTime $date): bool {
     return $date >= $this->workingHoursFrom && $date <= $this->workingHoursTo;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function isWeekend(\DateTime $date): bool {
+  final public function isWeekend(\DateTime $date): bool {
     $dayOfWeek = $date->format('N');
     return $dayOfWeek > 5;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  final public function getWorkingHours(): float {
+    // @todo - We could you DateTime's diff() method here, maybe.
+    return (float) ($this->workingHoursTo->getTimestamp() - $this->workingHoursFrom->getTimestamp()) / (60 * 60);
   }
 
 }
