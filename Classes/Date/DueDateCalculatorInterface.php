@@ -48,4 +48,12 @@ interface DueDateCalculatorInterface {
    */
   public function isWeekend(\DateTime $date): bool;
 
+  /**
+   * Gets the duration of working hours.
+   *
+   * @return float
+   *   Working hours.
+   */
+  public function getWorkingHours(): float;
+
 }
