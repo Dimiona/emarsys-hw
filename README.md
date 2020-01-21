@@ -21,6 +21,8 @@ To run unit tests just type `vendor/bin/phpunit`. For the detailed version of it
 
 _Note: Be sure to be in the project's root directory._
 
+![unittests](https://raw.githubusercontent.com/Dimiona/emarsys-hw/master/preview/unittests.png)
+
 #### Additional informations
 
 ---
