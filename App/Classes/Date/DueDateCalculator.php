@@ -23,8 +23,8 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
    * @return \DateTimeInterface
    *   Returns the date/time when the issue is resolved.
    *
-   * @throws \Classes\Exception\TurnaroundTimeException
-   * @throws \Classes\Exception\WorkingHoursException
+   * @throws \App\Classes\Exception\TurnaroundTimeException
+   * @throws \App\Classes\Exception\WorkingHoursException
    * @throws \Exception
    */
   public function CalculateDueDate(\DateTimeInterface $submitDate, int $turnaroundTime): \DateTimeInterface {
@@ -85,6 +85,10 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
       $resolveDate->add($addition);
 
       $deductionTime = $this->handleTimeOverflow($resolveDate, $pristineDate, $deductionTime);
+
+      if ($resolveDate->format('H:i') == $this->workingHoursTo->format('H:i')) {
+        $this->addHoursToNextWorkingDay($resolveDate);
+      }
 
       $turnaroundTime -= $deductionTime;
     }
@@ -167,12 +171,7 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
     $deductionTime -= $deductionHours;
     $deductionTime -= ($deductionMinutes / 100);
 
-    // Addition to next working day.
-    $toNextDay = 24 - $this->getWorkingHours();
-    $toNextDayHours = (int) $toNextDay;
-    $toNextDayMinutes = (int) ($toNextDay - $toNextDayHours) * 60;
-    $addition = new \DateInterval('PT' . $toNextDayHours . 'H' . $toNextDayMinutes . 'M');
-    $resolveDate->add($addition);
+    $this->addHoursToNextWorkingDay($resolveDate);
 
     return $deductionTime;
   }
@@ -215,6 +214,23 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
 
       $done = TRUE;
     }
+  }
+
+  /**
+   * Adds hours to next working day.
+   *
+   * @param \DateTimeInterface $resolveDate
+   *   Date/time object of when the issue will be resolved.
+   *
+   * @throws \Exception
+   */
+  protected function addHoursToNextWorkingDay(\DateTimeInterface $resolveDate) {
+    // Addition to next working day.
+    $toNextDay = 24 - $this->getWorkingHours();
+    $toNextDayHours = (int) $toNextDay;
+    $toNextDayMinutes = (int) ($toNextDay - $toNextDayHours) * 60;
+    $addition = new \DateInterval('PT' . $toNextDayHours . 'H' . $toNextDayMinutes . 'M');
+    $resolveDate->add($addition);
   }
 
 }
