@@ -64,15 +64,22 @@ abstract class DueDateCalculatorBase implements DueDateCalculatorInterface {
    * {@inheritdoc}
    */
   final public function isWorkingHours(\DateTime $date): bool {
-    return $date >= $this->workingHoursFrom && $date <= $this->workingHoursTo;
+    // The two datetime object must match in year, month and day.
+    $contextDate = clone $date;
+    $contextDate->setDate(
+      $this->workingHoursFrom->format('Y'),
+      $this->workingHoursFrom->format('m'),
+      $this->workingHoursFrom->format('d')
+    );
+
+    return ($contextDate >= $this->workingHoursFrom && $contextDate <= $this->workingHoursTo);
   }
 
   /**
    * {@inheritdoc}
    */
   final public function isWeekend(\DateTime $date): bool {
-    $dayOfWeek = $date->format('N');
-    return $dayOfWeek > 5;
+    return $date->format('N') > 5;
   }
 
   /**
