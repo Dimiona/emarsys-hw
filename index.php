@@ -6,8 +6,8 @@ use Classes\Factory\DueDateCalculatorFactory;
 spl_autoload_register();
 
 // Example of use.
-$submitDate = new \DateTime('2020-01-21 16:12:00');
-$turnaroundTime = 25;
+$submitDate = new \DateTime('2020-01-21 14:12:00');
+$turnaroundTime = 16;
 
 $dueDateCalculator = DueDateCalculatorFactory::create();
 $result = $dueDateCalculator->CalculateDueDate($submitDate, $turnaroundTime);
