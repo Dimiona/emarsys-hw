@@ -27,7 +27,7 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
    * @throws \Classes\Exception\WorkingHoursException
    * @throws \Exception
    */
-  public function CalculateDueDate(\DateTime $submitDate, int $turnaroundTime): \DateTime {
+  public function CalculateDueDate(\DateTimeInterface $submitDate, int $turnaroundTime): \DateTimeInterface {
     if (!$this->isWorkingHours($submitDate)) {
       throw new WorkingHoursException('The submission date is out of working hours.');
     }
@@ -36,12 +36,11 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
       throw new TurnaroundTimeException('Invalid turnaround time. It must be greater or equal than 1.');
     }
 
-    $backupMinutes = new \DateInterval('PT' . $submitDate->format('i') . 'M');
-
     $resolveDate = clone $submitDate;
     // Makes our job/life easier and get rid of float numbers.
     $resolveDate->setTime($submitDate->format('H'), 0);
 
+    $backupMinutes = new \DateInterval('PT' . $submitDate->format('i') . 'M');
     $workingHours = $this->getWorkingHours();
     $hadWeekend = FALSE;
     while ($turnaroundTime > 0) {
@@ -126,15 +125,15 @@ class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculat
   /**
    * Gets the difference of two dates in hours.
    *
-   * @param \DateTime $fromDate
+   * @param \DateTimeInterface $fromDate
    *   From date.
-   * @param \DateTime toDate
+   * @param \DateTimeInterface toDate
    *   To date.
    *
    * @return float
    *   Difference in hours.
    */
-  protected function getDatesDifference(\DateTime $fromDate, \DateTime $toDate) {
+  protected function getDatesDifference(\DateTimeInterface $fromDate, \DateTimeInterface $toDate) {
     $contextDate = clone $fromDate;
     $contextDate->setTime(
       $this->workingHoursTo->format('H'),

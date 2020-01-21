@@ -12,28 +12,28 @@ abstract class DueDateCalculatorBase implements DueDateCalculatorInterface {
   /**
    * Datetime of 'from' working hours.
    *
-   * @var \DateTime
+   * @var \DateTimeInterface
    */
   protected $workingHoursFrom;
 
   /**
    * Datetime of 'to' working hours.
    *
-   * @var \DateTime
+   * @var \DateTimeInterface
    */
   protected $workingHoursTo;
 
   /**
    * DueDateCalculatorBase constructor.
    *
-   * @param \DateTime|NULL $workingHoursFrom
+   * @param \DateTimeInterface|NULL $workingHoursFrom
    *   Working hours from.
-   * @param \DateTime|NULL $workingHoursTo
+   * @param \DateTimeInterface|NULL $workingHoursTo
    *   Working hours to. Value lesser than 'from' date/time will be ignored.
    *
    * @throws \Exception
    */
-  public function __construct(\DateTime $workingHoursFrom = NULL, \DateTime $workingHoursTo = NULL) {
+  public function __construct(\DateTimeInterface $workingHoursFrom = NULL, \DateTimeInterface $workingHoursTo = NULL) {
     if (!is_null($workingHoursFrom)) {
       $this->workingHoursFrom = $workingHoursFrom;
     }
@@ -58,12 +58,12 @@ abstract class DueDateCalculatorBase implements DueDateCalculatorInterface {
   /**
    * {@inheritdoc}
    */
-  abstract function CalculateDueDate(\DateTime $submitDate, int $turnaroundTime): \DateTime;
+  abstract function CalculateDueDate(\DateTimeInterface $submitDate, int $turnaroundTime): \DateTimeInterface;
 
   /**
    * {@inheritdoc}
    */
-  final public function isWorkingHours(\DateTime $date): bool {
+  final public function isWorkingHours(\DateTimeInterface $date): bool {
     // The two datetime object must match in year, month and day.
     $contextDate = clone $date;
     $contextDate->setDate(
@@ -78,7 +78,7 @@ abstract class DueDateCalculatorBase implements DueDateCalculatorInterface {
   /**
    * {@inheritdoc}
    */
-  final public function isWeekend(\DateTime $date): bool {
+  final public function isWeekend(\DateTimeInterface $date): bool {
     return $date->format('N') > 5;
   }
 

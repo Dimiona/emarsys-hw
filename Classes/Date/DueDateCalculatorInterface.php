@@ -16,37 +16,37 @@ interface DueDateCalculatorInterface {
   /**
    * Calculates due date.
    *
-   * @param \DateTime $submitDate
+   * @param \DateTimeInterface $submitDate
    *   Date/time of the submission.
    * @param int $turnaroundTime
    *   Turnaround time in hours (e.g. 2 days equal 16 hours).
    *
-   * @return \DateTime
+   * @return \DateTimeInterface
    *   Returns the date/time when the issue is resolved.
    */
-  public function CalculateDueDate(\DateTime $submitDate, int $turnaroundTime): \DateTime;
+  public function CalculateDueDate(\DateTimeInterface $submitDate, int $turnaroundTime): \DateTimeInterface;
 
   /**
    * Checks whether the given date is working hours or not.
    *
-   * @param \DateTime $date
+   * @param \DateTimeInterface $date
    *   A date to check for.
    *
    * @return bool
    *   Is working hours or not.
    */
-  public function isWorkingHours(\DateTime $date): bool;
+  public function isWorkingHours(\DateTimeInterface $date): bool;
 
   /**
    * Checks whether the given date is weekend or not.
    *
-   * @param \DateTime $date
+   * @param \DateTimeInterface $date
    *   A date to check for.
    *
    * @return bool
    *   Is weekend or not.
    */
-  public function isWeekend(\DateTime $date): bool;
+  public function isWeekend(\DateTimeInterface $date): bool;
 
   /**
    * Gets the duration of working hours.
