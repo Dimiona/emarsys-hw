@@ -1,11 +1,11 @@
 <?php
 
-namespace Classes\Date;
+namespace App\Classes\Date;
 
 /**
  * Class DueDateCalculatorBase.
  *
- * @package Classes\Date
+ * @package App\Classes\Date
  */
 abstract class DueDateCalculatorBase implements DueDateCalculatorInterface {
 

@@ -1,6 +1,6 @@
 <?php
 
-use Classes\Factory\DueDateCalculatorFactory;
+use App\Classes\Factory\DueDateCalculatorFactory;
 
 // Basic autoload.
 spl_autoload_register();

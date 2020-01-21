@@ -1,11 +1,11 @@
 <?php
 
-namespace Classes\Date;
+namespace App\Classes\Date;
 
 /**
  * Interface DueDateCalculatorInterface.
  *
- * @package Classes\Date
+ * @package App\Classes\Date
  */
 interface DueDateCalculatorInterface {
 

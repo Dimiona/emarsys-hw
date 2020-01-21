@@ -1,20 +1,20 @@
 <?php
 
-namespace Classes\Factory;
+namespace App\Classes\Factory;
 
-use Classes\Date\DueDateCalculatorInterface;
+use App\Classes\Date\DueDateCalculatorInterface;
 
 /**
  * Interface DueDateCalculatorFactoryInterface.
  *
- * @package Classes\Factory
+ * @package App\Classes\Factory
  */
 interface DueDateCalculatorFactoryInterface {
 
   /**
    * Instantiates a due date calculator.
    *
-   * @return \Classes\Date\DueDateCalculatorInterface
+   * @return \App\Classes\Date\DueDateCalculatorInterface
    */
   public static function create(): DueDateCalculatorInterface;
 

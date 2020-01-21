@@ -1,10 +1,10 @@
 <?php
 
-namespace Classes\Exception;
+namespace App\Classes\Exception;
 
 /**
  * Class TurnaroundTimeException.
  *
- * @package Classes\Exception
+ * @package App\Classes\Exception
  */
 class TurnaroundTimeException extends \Exception {};

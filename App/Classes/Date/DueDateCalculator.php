@@ -1,14 +1,14 @@
 <?php
 
-namespace Classes\Date;
+namespace App\Classes\Date;
 
-use Classes\Exception\TurnaroundTimeException;
-use Classes\Exception\WorkingHoursException;
+use App\Classes\Exception\TurnaroundTimeException;
+use App\Classes\Exception\WorkingHoursException;
 
 /**
  * Class DueDateCalculator.
  *
- * @package Classes\Date
+ * @package App\Classes\Date
  */
 class DueDateCalculator extends DueDateCalculatorBase implements DueDateCalculatorInterface {
 

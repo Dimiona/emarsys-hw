@@ -1,14 +1,14 @@
 <?php
 
-namespace Classes\Factory;
+namespace App\Classes\Factory;
 
-use Classes\Date\DueDateCalculator;
-use Classes\Date\DueDateCalculatorInterface;
+use App\Classes\Date\DueDateCalculator;
+use App\Classes\Date\DueDateCalculatorInterface;
 
 /**
  * Class DueDateCalculatorFactory.
  *
- * @package Classes\Factory
+ * @package App\Classes\Factory
  */
 final class DueDateCalculatorFactory implements DueDateCalculatorFactoryInterface {
 

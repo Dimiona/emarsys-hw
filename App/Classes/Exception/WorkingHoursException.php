@@ -1,10 +1,10 @@
 <?php
 
-namespace Classes\Exception;
+namespace App\Classes\Exception;
 
 /**
  * Class WorkingHoursException.
  *
- * @package Classes\Exception
+ * @package App\Classes\Exception
  */
 class WorkingHoursException extends \Exception {};
