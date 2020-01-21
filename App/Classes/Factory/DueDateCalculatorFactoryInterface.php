@@ -16,6 +16,6 @@ interface DueDateCalculatorFactoryInterface {
    *
    * @return \App\Classes\Date\DueDateCalculatorInterface
    */
-  public static function create(): DueDateCalculatorInterface;
+  public static function create(\DateTimeInterface $workingHoursFrom = NULL, \DateTimeInterface $workingHoursTo = NULL): DueDateCalculatorInterface;
 
 }

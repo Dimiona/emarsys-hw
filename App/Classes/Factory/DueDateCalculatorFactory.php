@@ -15,8 +15,8 @@ final class DueDateCalculatorFactory implements DueDateCalculatorFactoryInterfac
   /**
    * {@inheritdoc}
    */
-  public static function create(): DueDateCalculatorInterface {
-    return new DueDateCalculator();
+  public static function create(\DateTimeInterface $workingHoursFrom = NULL, \DateTimeInterface $workingHoursTo = NULL): DueDateCalculatorInterface {
+    return new DueDateCalculator($workingHoursFrom, $workingHoursTo);
   }
 
 }
